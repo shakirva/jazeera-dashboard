@@ -6,6 +6,7 @@ import { Topbar } from "@/components/Topbar"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { apiCall } from "@/lib/api/client"
 import {
   Warehouse,
@@ -30,6 +31,13 @@ export default function WarehouseIndexPage() {
   const [vans, setVans] = useState<Van[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [statusFilter, setStatusFilter] = useState<string>("active")
+
+  const filteredVans = vans.filter((van) => {
+    if (statusFilter === "active") return van.isActive
+    if (statusFilter === "inactive") return !van.isActive
+    return true
+  })
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -89,6 +97,17 @@ export default function WarehouseIndexPage() {
           </div>
         )}
 
+        {/* Tabs Filter */}
+        <div className="flex justify-between items-center">
+          <Tabs value={statusFilter} onValueChange={setStatusFilter}>
+            <TabsList>
+              <TabsTrigger value="active">Active Warehouses</TabsTrigger>
+              <TabsTrigger value="inactive">Archived / Inactive</TabsTrigger>
+              <TabsTrigger value="all">All</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+
         {/* Loading skeleton */}
         {loading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -99,16 +118,16 @@ export default function WarehouseIndexPage() {
         )}
 
         {/* Vans grid */}
-        {!loading && vans.length === 0 && (
+        {!loading && filteredVans.length === 0 && (
           <div className="text-center text-muted-foreground py-16">
             <Package className="h-10 w-10 mx-auto mb-3 opacity-30" />
             <p>No vans found.</p>
           </div>
         )}
 
-        {!loading && vans.length > 0 && (
+        {!loading && filteredVans.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {vans.map((van) => (
+            {filteredVans.map((van) => (
               <Card
                 key={van.id}
                 className="hover:shadow-md transition-shadow border-slate-200"

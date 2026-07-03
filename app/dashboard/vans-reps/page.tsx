@@ -8,6 +8,7 @@ import { StatusBadge } from "@/components/StatusBadge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Dialog,
   DialogContent,
@@ -50,7 +51,7 @@ export default function VansRepsPage() {
   const [vans, setVans] = useState<VanRecord[]>([])
   const [drivers, setDrivers] = useState<DriverUser[]>([])
   const [loading, setLoading] = useState(true)
-  const [statusFilter, setStatusFilter] = useState<string>("all")
+  const [statusFilter, setStatusFilter] = useState<string>("active")
 
   const [vanModalOpen, setVanModalOpen] = useState(false)
   const [selectedVan, setSelectedVan] = useState<VanRecord | null>(null)
@@ -225,12 +226,14 @@ export default function VansRepsPage() {
             <CardContent><div className="text-2xl font-bold">{vans.filter((v) => totalInventoryItems(v) > 0).length}</div><p className="text-xs text-slate-500 mt-1">Have inventory</p></CardContent></Card>
         </div>
 
-        <div className="flex gap-4 items-center">
-          <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </Select>
+        <div className="flex justify-between items-center">
+          <Tabs value={statusFilter} onValueChange={setStatusFilter}>
+            <TabsList>
+              <TabsTrigger value="active">Active</TabsTrigger>
+              <TabsTrigger value="inactive">Archived / Inactive</TabsTrigger>
+              <TabsTrigger value="all">All</TabsTrigger>
+            </TabsList>
+          </Tabs>
           <Button variant="outline" size="sm" onClick={loadData} className="cursor-pointer">Refresh</Button>
         </div>
 
